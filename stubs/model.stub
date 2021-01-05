@@ -1,0 +1,13 @@
+<?php
+
+namespace {{namespace}};
+
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Statamic\Eloquent\Entries\EntryModel;
+
+class {{class}} extends EntryModel
+{
+    use HasFactory;
+
+    protected $table = '{{table}}';
+}

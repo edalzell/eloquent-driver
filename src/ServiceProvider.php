@@ -6,15 +6,22 @@ use Statamic\Contracts\Entries\CollectionRepository as CollectionRepositoryContr
 use Statamic\Contracts\Entries\EntryRepository as EntryRepositoryContract;
 use Statamic\Eloquent\Commands\ImportEntries;
 use Statamic\Eloquent\Entries\CollectionRepository;
-use Statamic\Eloquent\Entries\EntryModel;
 use Statamic\Eloquent\Entries\EntryQueryBuilder;
 use Statamic\Eloquent\Entries\EntryRepository;
+use Statamic\Eloquent\Listeners\CreateCollectionFiles;
+use Statamic\Events\CollectionSaved;
 use Statamic\Providers\AddonServiceProvider;
 use Statamic\Statamic;
 
 class ServiceProvider extends AddonServiceProvider
 {
     protected $config = false;
+
+    protected $listen = [
+        CollectionSaved::class => [
+            CreateCollectionFiles::class,
+        ],
+    ];
 
     public function boot()
     {
@@ -27,6 +34,13 @@ class ServiceProvider extends AddonServiceProvider
 
             $this->commands([ImportEntries::class]);
         }
+
+        $this->app->booted(function () {
+            config([
+                'generators.stubs.model' => __DIR__.'/../stubs/model.stub',
+                'generators.stubs.migration' => __DIR__.'/../stubs/migration.create.stub',
+            ]);
+        });
     }
 
     public function register()

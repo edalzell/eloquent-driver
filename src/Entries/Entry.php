@@ -2,6 +2,7 @@
 
 namespace Statamic\Eloquent\Entries;
 
+use Illuminate\Support\Str;
 use Statamic\Eloquent\Entries\EntryModel as Model;
 use Statamic\Entries\Entry as FileEntry;
 
@@ -23,10 +24,13 @@ class Entry extends FileEntry
 
     public function toModel()
     {
-        $class = app('statamic.eloquent.entries.model');
+        // get the class from the collection
+        // it's the handle, singular, title case
+        $class = Str::of($this->collectionHandle())->singular()->title();
+
+        // $class = app('statamic.eloquent.entries.model');
 
         return $class::findOrNew($this->id())->fill([
-            'id' => $this->id() ?? $class::generateId(),
             'origin_id' => $this->originId(),
             'site' => $this->locale(),
             'slug' => $this->slug(),
@@ -70,7 +74,7 @@ class Entry extends FileEntry
         }
 
         if (! $this->model->origin) {
-            return null;
+            return;
         }
 
         return self::fromModel($this->model->origin);
